@@ -222,7 +222,10 @@ void GetXAuth() {
 void PutXAuth() {
   if (xauth.empty()) return;
 
-  KJ_SYSCALL(creat("/myhome/.Xauthority", 0700));
+  int fd;
+  KJ_SYSCALL(fd = creat("/myhome/.Xauthority", 0700));
+  close(fd);
+
   std::unique_ptr<FILE, decltype(&fclose)> output(
       popen("xauth -f /myhome/.Xauthority -q", "w"), fclose);
   if (!output) return;
